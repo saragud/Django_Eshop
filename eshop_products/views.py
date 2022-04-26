@@ -45,10 +45,12 @@ def product_detail(request, *args, **kwargs):
 
     new_order_form = UserNewOrderForm(request.POST or None, initial={'product_id': selected_product_id})
 
-    product = Product.objects.get_by_id(selected_product_id)
+    product: Product = Product.objects.get_by_id(selected_product_id)
     # print(product)
     if product is None or not product.active:
         raise Http404('محصول مورد نظر یافت نشد')
+    product.visit_count += 1
+    product.save()
 
     related_products = Product.objects.get_queryset().filter(categories__product=product).distinct()
     grouped_related_products = my_grouper(3, related_products)
